@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  gwt:
+    build:
+      context: .
+      dockerfile: Dockerfile.gwt
+    image: gwt:latest
+    command: ./wait-for mongo:27017 -- node server/app.js
+    expose:
+      - 8000
+    depends_on:
+      - mongo
+    links:
+      - mongo:mongo
+    ports:
+      - 9099:9099
+      - 9100:9100
+    expose:
+      - "9099"
+      - "9100"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    image: web:latest
+    depends_on:
+      - gwt
+    links:
+      - gwt:gwt
+    ports:
+      - 8020:80
+    expose:
+      - "8020"
+
+  mongo:
+    image: mongo:4.2-bionic
+    volumes:
+      - mongo-volume:/data/db
+
+volumes:
+    mongo-volume:
+

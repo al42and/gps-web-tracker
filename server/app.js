@@ -7,7 +7,7 @@ var jot = require('json-over-tcp');
 var io = require('socket.io');
 var http = require('http');
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/gps-web-tracker', function (error) {
+mongoose.connect(config.mongo, function (error) {
   if (error) {
     console.log(error);
   }
@@ -42,7 +42,7 @@ var LineSchema = new Schema({
 var Line = mongoose.model('line', LineSchema);
 
 // Create server for devices
-var deviceServer = jot.createServer(config.devicePort);
+var deviceServer = jot.createServer({}, config.devicePort);
 deviceServer.on('connection', function (socket) {
   socket.on('data', function (data) {
     logger.log('debug', 'device message: ', data);
