@@ -6,13 +6,11 @@ COPY package.json /app
 RUN npm install
 COPY bower.json /app
 RUN bower --allow-root install
-COPY Gruntfile.js /app
-COPY browser /app/browser
+COPY . /app
 RUN grunt
-RUN mv bower_components /app/browser/
 
 FROM nginx:1.17-alpine
 RUN rm /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/browser /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/a.conf
+COPY --from=builder /app /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 

@@ -3,20 +3,20 @@ module.exports = function (grunt) {
   var revision = grunt.option('revision') || (Math.random() + 1).toString(36).substring(7);
   var now = new Date;
   var cssminFiles = {};
-  cssminFiles['build/styles-' + revision + '.css'] = ['browser/styles.css'];
+  cssminFiles['build/styles-' + revision + '.css'] = ['styles.css'];
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     requirejs: {
       compile: {
         options: {
-          baseUrl: "./browser",
-          mainConfigFile: "./browser/require.config.js",
+          baseUrl: ".",
+          mainConfigFile: "./require.config.js",
           out: "build/scripts-"+revision+".js",
 //          optimize:'none',
-          name: "../bower_components/almond/almond",
+          name: "bower_components/almond/almond",
           include: [
-            '../bower_components/raven-js/dist/raven',
+            'bower_components/raven-js/dist/raven',
             'app'
           ]
         }
@@ -40,7 +40,7 @@ module.exports = function (grunt) {
       },
       dist: {
         files: {
-          'build/index.html': 'browser/index.html'
+          'build/index.html': 'index.html'
         }
       }
     },
@@ -48,8 +48,8 @@ module.exports = function (grunt) {
       main: {
         files: [
           // includes files within path
-          {expand: true, cwd: 'browser/', src: ['img/**'], dest: 'build/'},
-          {expand: true, cwd: 'browser/', src: ['wake.json'], dest: 'build/'}
+          {expand: true, cwd: './', src: ['img/**'], dest: 'build/'},
+          {expand: true, cwd: './', src: ['wake.json'], dest: 'build/'}
         ]
       }
     }
