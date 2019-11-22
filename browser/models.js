@@ -1,5 +1,5 @@
 define('models', [
-  'jquery', 'backbone', 'marionette', 'underscore',
+  'jquery', 'backbone', 'backbone.marionette', 'underscore',
   'map', 'vent', 'reqres'
 ], function ($, backbone, marionette, _, map, vent, reqres) {
 

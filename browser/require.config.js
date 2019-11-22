@@ -1,17 +1,18 @@
 require.config({
   paths: {
-    'backbone': 'bower_components/backbone/backbone',
-    'backbone.wreqr': 'bower_components/backbone.wreqr/lib/backbone.wreqr',
-    'backbone.modelbinder': 'bower_components/backbone.modelbinder/Backbone.ModelBinder',
-    'jquery': 'bower_components/jquery/dist/jquery',
-    'jquery-simple-color': 'bower_components/jquery-simple-color/src/jquery.simple-color',
-    'hbs': 'bower_components/hbs/hbs',
-    'hbs/handlebars': 'bower_components/hbs/hbs/handlebars',
-    'marionette': 'bower_components/marionette/lib/backbone.marionette',
-    'json': 'bower_components/requirejs-json/json',
-    'text': 'bower_components/requirejs-text/text',
-    'underscore': 'bower_components/underscore/underscore',
-    'socket.io-client': 'bower_components/socket.io-client/socket.io'
+    'backbone': 'node_modules/backbone/backbone',
+    'backbone.wreqr': 'node_modules/backbone.wreqr/lib/backbone.wreqr',
+    'backbone.modelbinder': 'node_modules/backbone.modelbinder/Backbone.ModelBinder',
+    'backbone.radio': 'node_modules/backbone.radio/build/backbone.radio',
+    'jquery': 'node_modules/jquery/dist/jquery',
+    'jquery-simple-color': 'node_modules/jquery-simple-color/src/jquery.simple-color',
+    'hbs': 'node_modules/require-handlebars-plugin/hbs',
+    'hbs/handlebars': 'node_modules/require-handlebars-plugin/hbs/handlebars',
+    'backbone.marionette': 'node_modules/backbone.marionette/lib/backbone.marionette',
+    'json': 'node_modules/requirejs-json/json',
+    'text': 'node_modules/requirejs-text/text',
+    'underscore': 'node_modules/underscore/underscore',
+    'socket.io-client': 'node_modules/socket.io-client/socket.io'
   },
   hbs: {
     disableI18n: true

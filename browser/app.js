@@ -1,9 +1,9 @@
 define('app', [
-  'jquery', 'backbone', 'marionette', 'socket.io-client',
+  'jquery', 'backbone', 'backbone.marionette', 'socket.io-client',
   'map', 'vent', 'reqres', 'models', 'views/panel', 'views/map', 'config', 'utils/isMobile'
 ], function ($, backbone, marionette, io, map, vent, reqres, models, panelViews, mapViews, config, isMobile) {
 
-  var App = Marionette.Application.extend({
+  var App = marionette.Application.extend({
     initData: function () {
       this.geoObjectsCollection = new models.GeoObjectsCollection();
     },

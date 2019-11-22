@@ -1,5 +1,5 @@
 define('views/panel', [
-  'jquery', 'backbone', 'underscore', 'marionette', 'backbone.modelbinder', 'vent', 'reqres', 'models',
+  'jquery', 'backbone', 'underscore', 'backbone.marionette', 'backbone.modelbinder', 'vent', 'reqres', 'models',
   'jquery-simple-color',
   'utils/colors',
   'map',

@@ -14,9 +14,9 @@ module.exports = function (grunt) {
           mainConfigFile: "./require.config.js",
           out: "build/scripts-"+revision+".js",
 //          optimize:'none',
-          name: "bower_components/almond/almond",
+          name: "node_modules/almond/almond",
           include: [
-            'bower_components/raven-js/dist/raven',
+            'node_modules/raven-js/dist/raven',
             'app'
           ]
         }

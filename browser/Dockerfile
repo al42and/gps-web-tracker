@@ -1,11 +1,9 @@
 FROM node:8-alpine AS builder
 
 WORKDIR /app
-RUN npm install -g bower grunt && apk update && apk add --no-cache git python
+RUN npm install -g grunt && apk update && apk add --no-cache git
 COPY package.json /app
-RUN npm install
-COPY bower.json /app
-RUN bower --allow-root install
+RUN yarn install
 COPY . /app
 RUN grunt
 
