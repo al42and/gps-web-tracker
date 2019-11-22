@@ -1,13 +1,27 @@
-var winston = require('winston');
+const winston = require('winston');
+const { createLogger, format, transports } = winston;
 
-var logger = new (winston.Logger)({
+const logger = createLogger({
+  level: 'debug',
+  format: format.combine(
+    format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss'
+    }),
+    format.errors({ stack: true }),
+    format.splat()
+  ),
   transports: [
-    new (winston.transports.Console)({level:'debug', json: false, timestamp: true }),
-    new winston.transports.File({ filename: __dirname + '/debug.log', json: true })
-  ],
-  exceptionHandlers: [
-    new (winston.transports.Console)({ json: false, timestamp: true }),
-    new winston.transports.File({ filename: __dirname + '/error.log', json: true })
+    new transports.Console({
+      level: 'debug',
+      format: format.combine(
+        format.colorize(),
+        format.simple()
+      )
+    }),
+    new transports.File({
+      filename: __dirname + '/debug.log',
+      level: 'debug'
+    })
   ],
   exitOnError: false
 });

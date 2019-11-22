@@ -7,13 +7,13 @@ var jot = require('json-over-tcp');
 var io = require('socket.io');
 var http = require('http');
 var mongoose = require('mongoose');
-mongoose.connect(config.mongo, {useMongoClient: true}, function (error) {
+mongoose.connect(config.mongo, function (error) {
   if (error) {
     console.log(error);
   }
 });
 
-logger.log('debug', 'Start server application');
+logger.log('info', 'Start server application');
 
 var Schema = mongoose.Schema;
 var PointSchema = new Schema({
@@ -45,7 +45,7 @@ var Line = mongoose.model('line', LineSchema);
 var deviceServer = jot.createServer({}, config.devicePort);
 deviceServer.on('connection', function (socket) {
   socket.on('data', function (data) {
-    logger.log('debug', 'device message: ', data);
+    logger.log('debug', 'device message: %s', data);
     data.modified = new Date();
     if ((data.lat) && (data.lng) && (data.id)) {
       Point.findOne({id: data.id}, function (err, doc) {
@@ -66,9 +66,6 @@ deviceServer.on('connection', function (socket) {
 
 deviceServer.listen(config.devicePort);
 
-var app = http.createServer();
-app.listen(config.browserPort);
-
 // Create server for http messages from devices
 var http_devices_app = express();
 http_devices_app.get('/', function (request, response) {
@@ -78,8 +75,8 @@ http_devices_app.get('/', function (request, response) {
     lng: request.query.longitude || request.query.lon,
     id: request.query.username || request.query.deviceid && request.query.deviceid.slice(-6, -1)
   };
-  logger.log('debug', 'http_devices_app query = ', request.query);
-  logger.log('debug', 'http_devices_app data = ', data);
+  logger.log('debug', 'http_devices_app query = %s', request.query);
+  logger.log('debug', 'http_devices_app data = %s', data);
 
   if ((data.lat) && (data.lng) && (data.id)) {
     Point.findOne({id: data.id}, function (err, doc) {
@@ -97,6 +94,9 @@ http_devices_app.get('/', function (request, response) {
   }
   response.send('ok\n');
 }).listen(9201);
+
+var app = http.createServer();
+app.listen(config.browserPort);
 
 var getModel = function (modelName) {
   var Model;
@@ -122,7 +122,7 @@ var getAddFunction = function (modelName, socket) {
     }
     Model.findOne({id: objectId}, function (err, object) {
       if (object) {
-        object.update(data);
+        object.updateUpdate(data);
         object.save()
       } else {
         object = new Model(data);
@@ -142,7 +142,7 @@ var getUpdateFunction = function (modelName, socket) {
     if (data._id) {
       delete data._id;
     }
-    Model.update({id: objectId}, data, {}, function (err, docs) {
+    Model.updateOne({id: objectId}, data, {}, function (err, docs) {
     });
     socket.broadcast.emit('update:' + modelName, data);
   }
@@ -155,7 +155,7 @@ var getDeleteFunction = function (modelName, socket) {
     if (data._id) {
       delete data._id;
     }
-    Model.remove({id: objectId}, function () {
+    Model.deleteOne({id: objectId}, function () {
     });
     socket.broadcast.emit('delete:' + modelName, objectId);
   }
@@ -169,7 +169,7 @@ var getHighlightFunction = function (modelName, socket) {
 
 setInterval(function () {
   var old_date = new Date(new Date() - config.pointTTL);
-  Point.remove({modified: {$not: {$gt: old_date}}}, function (err, docs) {
+  Point.deleteOne({modified: {$not: {$gt: old_date}}}, function (err, docs) {
   });
 }, config.pointCheckTime);
 
