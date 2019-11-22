@@ -7,7 +7,7 @@ var jot = require('json-over-tcp');
 var io = require('socket.io');
 var http = require('http');
 var mongoose = require('mongoose');
-mongoose.connect(config.mongo, function (error) {
+mongoose.connect(config.mongo, {useMongoClient: true}, function (error) {
   if (error) {
     console.log(error);
   }
