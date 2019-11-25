@@ -11,11 +11,6 @@ services:
       - mongo
     links:
       - mongo:mongo
-    ports:
-      - 9099:9099
-      - 9100:9100
-    expose:
-      - 9099
 
   browser:
     build:
