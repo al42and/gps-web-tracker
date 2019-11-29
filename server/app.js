@@ -1,12 +1,10 @@
-var config = require('./config');
-var logger = require('./logger');
-var url = require('url');
-var _ = require('underscore');
-var express = require('express');
-var jot = require('json-over-tcp');
-var io = require('socket.io');
-var http = require('http');
-var mongoose = require('mongoose');
+const config = require('./config');
+const logger = require('./logger');
+const express = require('express');
+const bodyParser = require('body-parser');
+const io = require('socket.io');
+const http = require('http');
+const mongoose = require('mongoose');
 mongoose.connect(config.mongo, function (error) {
   if (error) {
     console.log(error);
@@ -15,67 +13,44 @@ mongoose.connect(config.mongo, function (error) {
 
 logger.log('info', 'Start server application');
 
-var Schema = mongoose.Schema;
-var PointSchema = new Schema({
+const Schema = mongoose.Schema;
+const PointSchema = new Schema({
   id: String,
   lng: Number,
   lat: Number,
   modified: {type: Date, default: Date.now}
 });
-var Point = mongoose.model('points', PointSchema);
+const Point = mongoose.model('points', PointSchema);
 
-var MarkerSchema = new Schema({
+const MarkerSchema = new Schema({
   id: String,
   lng: Number,
   lat: Number,
   color: String,
   name: String
 });
-var Marker = mongoose.model('markers', MarkerSchema);
+const Marker = mongoose.model('markers', MarkerSchema);
 
-var LineSchema = new Schema({
+const LineSchema = new Schema({
   id: String,
   color: String,
   coordinates: Object,
   name: String
 });
-var Line = mongoose.model('line', LineSchema);
+const Line = mongoose.model('line', LineSchema);
 
-// Create server for devices
-var deviceServer = jot.createServer({}, config.devicePort);
-deviceServer.on('connection', function (socket) {
-  socket.on('data', function (data) {
-    logger.log('debug', 'device message: %s', data);
-    data.modified = new Date();
-    if ((data.lat) && (data.lng) && (data.id)) {
-      Point.findOne({id: data.id}, function (err, doc) {
-        if (doc) {
-          doc.lat = data.lat;
-          doc.lng = data.lng;
-          doc.modified = data.modified;
-          doc.save();
-        } else {
-          var point = new Point(data);
-          point.save();
-        }
-      });
-      browserServer.emit('set:point', data);
-    }
-  });
-});
-
-deviceServer.listen(config.devicePort);
 
 // Create server for http messages from devices
-var http_devices_app = express();
-http_devices_app.get('/', function (request, response) {
-  var data = {
+const http_devices_app = express();
+http_devices_app.use(bodyParser.json());
+http_devices_app.post('/set', function (request, response) {
+  const data = {
     modified: new Date(),
-    lat: request.query.latitude || request.query.lat,
-    lng: request.query.longitude || request.query.lon,
-    id: request.query.username || request.query.deviceid && request.query.deviceid.slice(-6, -1)
+    lat: request.body.latitude || request.body.lat,
+    lng: request.body.longitude || request.body.lon,
+    id: request.body.username || request.body.deviceid && request.body.deviceid.slice(-6, -1)
   };
-  logger.log('debug', 'http_devices_app query = %s', JSON.stringify(request.query));
+  logger.log('debug', 'http_devices_app query = %s', JSON.stringify(request.body));
   logger.log('debug', 'http_devices_app data = %s', JSON.stringify(data));
 
   if ((data.lat) && (data.lng) && (data.id)) {
@@ -86,37 +61,37 @@ http_devices_app.get('/', function (request, response) {
         doc.modified = data.modified;
         doc.save();
       } else {
-        var point = new Point(data);
+        const point = new Point(data);
         point.save();
       }
     });
     browserServer.emit('set:point', data);
+    response.json({ error: false, status: 'ok' });
+  } else {
+    response.json({ error: true, status: 'wrong data, must have "lat", "lon", and "username" set' });
   }
-  response.send('ok\n');
-}).listen(9201);
+}).listen(config.restPort);
 
-var app = http.createServer();
+const app = http.createServer();
 app.listen(config.browserPort);
 
-var getModel = function (modelName) {
-  var Model;
-  if (modelName == 'marker') {
-    Model = Marker;
+const getModel = function (modelName) {
+  if (modelName === 'marker') {
+    return Marker;
   }
-  if (modelName == 'line') {
-    Model = Line;
+  if (modelName === 'line') {
+    return  Line;
   }
-  if (modelName == 'point') {
-    Model = Point;
+  if (modelName === 'point') {
+    return  Point;
   }
-  return Model;
 };
 
-var getAddFunction = function (modelName, socket) {
-  var Model = getModel(modelName);
+const getAddFunction = function (modelName, socket) {
+  const Model = getModel(modelName);
 
   return function (data) {
-    var objectId = data.id;
+    const objectId = data.id;
     if (!objectId) {
       return
     }
@@ -128,17 +103,15 @@ var getAddFunction = function (modelName, socket) {
         object = new Model(data);
         object.save();
       }
-
       socket.broadcast.emit('add:' + modelName, object);
     });
-
   }
 };
 
-var getUpdateFunction = function (modelName, socket) {
-  var Model = getModel(modelName);
+const getUpdateFunction = function (modelName, socket) {
+  const Model = getModel(modelName);
   return function (data) {
-    var objectId = data.id;
+    const objectId = data.id;
     if (data._id) {
       delete data._id;
     }
@@ -148,10 +121,10 @@ var getUpdateFunction = function (modelName, socket) {
   }
 };
 
-var getDeleteFunction = function (modelName, socket) {
-  var Model = getModel(modelName);
+const getDeleteFunction = function (modelName, socket) {
+  const Model = getModel(modelName);
   return function (data) {
-    var objectId = data.id;
+    const objectId = data.id;
     if (data._id) {
       delete data._id;
     }
@@ -161,7 +134,7 @@ var getDeleteFunction = function (modelName, socket) {
   }
 };
 
-var getHighlightFunction = function (modelName, socket) {
+const getHighlightFunction = function (modelName, socket) {
   return function (objectId) {
     socket.broadcast.emit('highlight:' + modelName, objectId);
   }
@@ -175,7 +148,7 @@ setInterval(function () {
 
 
 //Create server for browser
-var browserServer = io(app, {
+const browserServer = io(app, {
   logger: logger
 });
 

@@ -2,7 +2,7 @@
   "name": "gps-web-tracker",
   "version": "0.1.1",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,12 +10,11 @@
   "license": "MIT",
   "dependencies": {
     "engine.io": "^3.4.0",
-    "http-server": "~0.6.1",
-    "json-over-tcp": "~0.3.2",
     "mongoose": "^5.7.12",
     "socket.io": "^1.0.6",
-    "underscore": "^1.9.1",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "express": "^4.17.1",
+    "body-parser": "latest"
   },
   "repository": {
     "type": "git",
