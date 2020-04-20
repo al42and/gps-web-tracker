@@ -1,0 +1,7 @@
+{
+  "browserPort": 9100,
+  "restPort": 9201,
+  "mongo": "mongodb://mongo:27017/gps-web-tracker",
+  "pointTTL": 300,
+  "pointCheckTime": 60
+}

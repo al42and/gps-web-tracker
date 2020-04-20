@@ -1,12 +1,13 @@
-const config = require('./config');
-const logger = require('./logger');
-const express = require('express');
-const bodyParser = require('body-parser');
-const io = require('socket.io');
-const http = require('http');
-const mongoose = require('mongoose');
+import * as config from './config.json';
+import { logger } from './logger';
+import express = require('express');
+import io = require('socket.io');
+import http = require('http');
+import mongoose = require('mongoose');
+
 mongoose.connect(config.mongo, function (error) {
   if (error) {
+    logger.log('error', error.errmsg);
     console.log(error);
   }
 });
@@ -14,13 +15,21 @@ mongoose.connect(config.mongo, function (error) {
 logger.log('info', 'Start server application');
 
 const Schema = mongoose.Schema;
+interface IMapObj extends mongoose.Document {
+  id: string
+}
 const PointSchema = new Schema({
   id: String,
   lng: Number,
   lat: Number,
   modified: {type: Date, default: Date.now}
 });
-const Point = mongoose.model('points', PointSchema);
+interface IPoint extends IMapObj {
+  lng: number,
+  lat: number,
+  modified: Date
+}
+const Point = mongoose.model<IPoint>('points', PointSchema);
 
 const MarkerSchema = new Schema({
   id: String,
@@ -29,7 +38,13 @@ const MarkerSchema = new Schema({
   color: String,
   name: String
 });
-const Marker = mongoose.model('markers', MarkerSchema);
+interface IMarker extends IMapObj {
+  lng: number,
+  lat: number,
+  color: string,
+  name: string
+}
+const Marker = mongoose.model<IMarker>('markers', MarkerSchema);
 
 const LineSchema = new Schema({
   id: String,
@@ -37,13 +52,18 @@ const LineSchema = new Schema({
   coordinates: Object,
   name: String
 });
-const Line = mongoose.model('line', LineSchema);
+interface ILine extends IMapObj {
+  color: string,
+  coordinates: object,
+  name: string
+}
+const Line = mongoose.model<ILine>('line', LineSchema);
 
 
 // Create server for http messages from devices
-const http_devices_app = express();
-http_devices_app.use(bodyParser.json());
-http_devices_app.post('/set', function (request, response) {
+const restful_api_app = express();
+restful_api_app.use(express.json());
+restful_api_app.post('/set', function (request, response) {
   const data = {
     modified: new Date(),
     lat: request.body.latitude || request.body.lat,
@@ -75,30 +95,29 @@ http_devices_app.post('/set', function (request, response) {
 const app = http.createServer();
 app.listen(config.browserPort);
 
-const getModel = function (modelName) {
+const getModel = function (modelName: string): mongoose.Model<IMapObj> {
   if (modelName === 'marker') {
     return Marker;
   }
   if (modelName === 'line') {
-    return  Line;
+    return Line;
   }
   if (modelName === 'point') {
-    return  Point;
+    return Point;
   }
 };
 
-const getAddFunction = function (modelName, socket) {
+const getAddFunction = function (modelName: string, socket: io.Socket) {
   const Model = getModel(modelName);
 
   return function (data) {
-    const objectId = data.id;
+    const objectId: string = data.id;
     if (!objectId) {
       return
     }
     Model.findOne({id: objectId}, function (err, object) {
       if (object) {
-        object.updateUpdate(data);
-        object.save()
+        object.replaceOne(data);
       } else {
         object = new Model(data);
         object.save();
@@ -108,7 +127,7 @@ const getAddFunction = function (modelName, socket) {
   }
 };
 
-const getUpdateFunction = function (modelName, socket) {
+const getUpdateFunction = function (modelName: string, socket: io.Socket) {
   const Model = getModel(modelName);
   return function (data) {
     const objectId = data.id;
@@ -121,7 +140,7 @@ const getUpdateFunction = function (modelName, socket) {
   }
 };
 
-const getDeleteFunction = function (modelName, socket) {
+const getDeleteFunction = function (modelName: string, socket: io.Socket) {
   const Model = getModel(modelName);
   return function (data) {
     const objectId = data.id;
@@ -134,26 +153,23 @@ const getDeleteFunction = function (modelName, socket) {
   }
 };
 
-const getHighlightFunction = function (modelName, socket) {
+const getHighlightFunction = function (modelName: string, socket: io.Socket) {
   return function (objectId) {
     socket.broadcast.emit('highlight:' + modelName, objectId);
   }
 };
 
 setInterval(function () {
-  var old_date = new Date(new Date() - config.pointTTL);
-  Point.deleteOne({modified: {$not: {$gt: old_date}}}, function (err, docs) {
-  });
+  const old_date = new Date(+ new Date() - config.pointTTL);
+  Point.deleteOne({modified: {$not: {$gt: old_date}}});
 }, config.pointCheckTime);
 
 
 //Create server for browser
-const browserServer = io(app, {
-  logger: logger
-});
+const browserServer = io(app);
 
 
-browserServer.on('connection', function (socket) {
+browserServer.on('connection', function (socket: io.Socket) {
   socket.on('add:marker', getAddFunction('marker', socket));
   socket.on('add:line', getAddFunction('line', socket));
 

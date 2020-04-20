@@ -12,7 +12,7 @@ Installation
 
 * Clone repository to your server.
 * `cp browser/config.example.js browser/config.js`; paste your [Yandex.Maps API key](https://tech.yandex.com/maps/jsapi/) there and adjust `serverUrl` and `browserPort`. For local development, set them to `http://localhost` and `8020`.
-* `cp server/config.example.js server/config.js`; *don't* edit it.
+* `cp server/config.example.json server/config.json`; *don't* edit it.
 * `docker-compose build && docker-compose up`.
 * Open http://localhost:8020 in your browser and rejoice.
 

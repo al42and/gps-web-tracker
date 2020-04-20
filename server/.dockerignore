@@ -1,1 +1,4 @@
 Dockerfile
+*.js
+*.js.map
+node_modules

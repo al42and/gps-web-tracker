@@ -1,7 +1,7 @@
-const winston = require('winston');
+import winston = require('winston');
 const { createLogger, format, transports } = winston;
 
-const logger = createLogger({
+const logger: winston.Logger = createLogger({
   level: 'debug',
   format: format.combine(
     format.timestamp({
@@ -26,4 +26,4 @@ const logger = createLogger({
   exitOnError: false
 });
 
-module.exports = logger;
+export { logger };

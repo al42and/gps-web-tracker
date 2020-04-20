@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "allowJs": false,
+    "sourceMap": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "app.ts", "logger.ts", "config.d.ts"],
+  "exclude": [
+    "node_modules"
+  ]
+}
