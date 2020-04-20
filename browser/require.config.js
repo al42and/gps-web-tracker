@@ -12,7 +12,7 @@ require.config({
     'json': 'node_modules/requirejs-json/json',
     'text': 'node_modules/requirejs-text/text',
     'underscore': 'node_modules/underscore/underscore',
-    'socket.io-client': 'node_modules/socket.io-client/socket.io'
+    'socket.io-client': 'node_modules/socket.io-client/dist/socket.io'
   },
   hbs: {
     disableI18n: true
@@ -24,6 +24,6 @@ require.config({
     },
     'underscore': {
       exports: '_'
-    },
+    }
   }
 });
