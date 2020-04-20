@@ -21,6 +21,9 @@ require.config({
     'jquery-simple-color': {
       deps: ['jquery'],
       exports: '$.fn.simpleColor'
-    }
+    },
+    'underscore': {
+      exports: '_'
+    },
   }
 });
