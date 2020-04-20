@@ -5,7 +5,8 @@ import io = require('socket.io');
 import http = require('http');
 import mongoose = require('mongoose');
 
-mongoose.connect(config.mongo, function (error) {
+const mongo_client_options: mongoose.ConnectionOptions = {useNewUrlParser: true, useUnifiedTopology: true};
+mongoose.connect(config.mongo, mongo_client_options, function (error) {
   if (error) {
     logger.log('error', error.errmsg);
     console.log(error);
