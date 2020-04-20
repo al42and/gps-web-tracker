@@ -1,7 +1,7 @@
 define('app', [
-  'jquery', 'backbone', 'backbone.marionette', 'socket.io-client',
+  'jquery', 'underscore', 'backbone', 'backbone.marionette', 'socket.io-client',
   'map', 'vent', 'reqres', 'models', 'views/panel', 'views/map', 'config', 'utils/isMobile'
-], function ($, backbone, marionette, io, map, vent, reqres, models, panelViews, mapViews, config, isMobile) {
+], function ($, _, backbone, marionette, io, map, vent, reqres, models, panelViews, mapViews, config, isMobile) {
 
   var App = marionette.Application.extend({
     initData: function () {

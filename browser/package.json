@@ -16,7 +16,7 @@
     "grunt-contrib-cssmin": "~3.0.0",
     "grunt-contrib-requirejs": "~1.0.0",
     "grunt-processhtml": "~0.4.2",
-    "underscore": "^1.6.0",
+    "underscore": "1.9.2",
     "almond": "~0.3.3",
     "raven-js": "^1.1.15",
     "requirejs": "~2.3.6",
@@ -27,7 +27,7 @@
     "backbone.wreqr": "1.4.0",
     "backbone.marionette": "2.1.0",
     "backbone.modelbinder": "1.1.0",
-    "jquery-simple-color": "recurser/jquery-simple-color#^1.2.2",
+    "jquery-simple-color": "recurser/jquery-simple-color#1.2.1",
     "requirejs-json": "~0.0.3"
   },
   "repository": {
